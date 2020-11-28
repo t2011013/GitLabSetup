@@ -1,2 +1,6 @@
 #!/bin/bash
-sudo EXTERNAL_GITLAB_URL=$1 docker-compose up -d --remove-orphans
+echo "-------------------------"
+echo "Please input server url."
+read input
+
+sudo EXTERNAL_GITLAB_URL=$input docker-compose up -d --remove-orphans
