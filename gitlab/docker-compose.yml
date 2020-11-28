@@ -1,0 +1,43 @@
+version: '3.8'
+services:
+  gitLab:
+    image: 'gitlab/gitlab-ce:latest'
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url '$EXTERNAL_GITLAB_URL'
+        mattermost_external_url '$EXTERNAL_GITLAB_URL:8001'
+        gitlab_rails['initial_root_password'] = "password"
+        gitlab_rails['initial_shared_runners_registration_token'] = "token"
+    ports:
+      - '80:80'
+      - '443:443'
+      - '22:22'
+      - '8001:8001'
+    volumes:
+      - '/srv/gitlab/config:/etc/gitlab'
+      - '/srv/gitlab/logs:/var/log/gitlab'
+      - '/srv/gitlab/data:/var/opt/gitlab'
+  runner-register:
+    image: 'gitlab/gitlab-runner:latest'
+    restart: always
+    volumes:
+      - './tmp:/tmp'
+      - '/srv/gitlab-runner/config:/etc/gitlab-runner'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    depends_on:
+      - gitLab
+    working_dir: /tmp
+    entrypoint: >
+      sh -c "
+        sh /tmp/download.sh &&
+        /tmp/dockerize --timeout 600s --wait $EXTERNAL_GITLAB_URL &&
+        sh /tmp/init.sh $EXTERNAL_GITLAB_URL
+      "
+  runner:
+    image: 'gitlab/gitlab-runner:latest'
+    restart: always
+    volumes:
+      - '/srv/gitlab-runner/config:/etc/gitlab-runner'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    depends_on:
+      - runner-register
