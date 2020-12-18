@@ -2,6 +2,7 @@ version: '3.8'
 services:
   gitLab:
     image: 'gitlab/gitlab-ce:latest'
+    restart: always
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         external_url '$EXTERNAL_GITLAB_URL'
