@@ -5,8 +5,8 @@ services:
     restart: always
     environment:
       GITLAB_OMNIBUS_CONFIG: |
-        external_url '$EXTERNAL_GITLAB_URL'
-        mattermost_external_url '$EXTERNAL_GITLAB_URL:8001'
+        external_url 'http://$EXTERNAL_GITLAB_URL'
+        mattermost_external_url 'http://$EXTERNAL_GITLAB_URL:8001'
         gitlab_rails['initial_root_password'] = "password"
         gitlab_rails['initial_shared_runners_registration_token'] = "token"
     ports:
@@ -31,8 +31,8 @@ services:
     entrypoint: >
       sh -c "
         sh /tmp/download.sh &&
-        /tmp/dockerize --timeout 600s --wait $EXTERNAL_GITLAB_URL &&
-        sh /tmp/init.sh $EXTERNAL_GITLAB_URL
+        /tmp/dockerize --timeout 600s --wait http://$EXTERNAL_GITLAB_URL &&
+        sh /tmp/init.sh http://$EXTERNAL_GITLAB_URL
       "
   runner:
     image: 'gitlab/gitlab-runner:latest'
