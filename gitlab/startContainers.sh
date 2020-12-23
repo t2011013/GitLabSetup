@@ -3,7 +3,7 @@ echo "-------------------------"
 echo "Please input server name. default: GitLabDevServer."
 read input
 
-if [ -z "$input" ]; then
+if [ "$input" = "" ]; then
   input="GitLabDevServer"
 fi
 
