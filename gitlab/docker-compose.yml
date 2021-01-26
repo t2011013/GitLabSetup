@@ -18,22 +18,6 @@ services:
       - '/srv/gitlab/config:/etc/gitlab'
       - '/srv/gitlab/logs:/var/log/gitlab'
       - '/srv/gitlab/data:/var/opt/gitlab'
-  runner-register:
-    image: 'gitlab/gitlab-runner:latest'
-    restart: always
-    volumes:
-      - './tmp:/tmp'
-      - '/srv/gitlab-runner/config:/etc/gitlab-runner'
-      - '/var/run/docker.sock:/var/run/docker.sock'
-    depends_on:
-      - gitLab
-    working_dir: /tmp
-    entrypoint: >
-      sh -c "
-        sh /tmp/download.sh &&
-        /tmp/dockerize --timeout 600s --wait http://$EXTERNAL_GITLAB_URL &&
-        sh /tmp/init.sh http://$EXTERNAL_GITLAB_URL
-      "
   runner:
     image: 'gitlab/gitlab-runner:latest'
     restart: always
